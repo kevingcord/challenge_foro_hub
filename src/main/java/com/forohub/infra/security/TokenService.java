@@ -26,8 +26,20 @@ public class TokenService {
                 .sign(algorithm);
     }
 
-    private Instant fechaExpiracion(){
-        return Instant.now().plusSeconds(86400);
+    public String getSubject(String token){
+
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+
+        return JWT.require(algorithm)
+                .withIssuer("forohub")
+                .build()
+                .verify(token)
+                .getSubject();
     }
 
+    private Instant fechaExpiracion(){
+        return Instant.now().plusSeconds(86400)
+                .atZone(ZoneOffset.of("-05:00"))
+                .toInstant();
+    }
 }

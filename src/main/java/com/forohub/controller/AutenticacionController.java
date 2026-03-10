@@ -3,31 +3,33 @@ package com.forohub.controller;
 import com.forohub.domain.Usuario;
 import com.forohub.dto.DatosAutenticacionUsuario;
 import com.forohub.infra.security.TokenService;
-import com.forohub.repository.UsuarioRepository;
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/login")
 public class AutenticacionController {
 
-    private final UsuarioRepository repository;
+    private final AuthenticationManager manager;
     private final TokenService tokenService;
 
-    public AutenticacionController(UsuarioRepository repository, TokenService tokenService) {
-        this.repository = repository;
+    public AutenticacionController(AuthenticationManager manager, TokenService tokenService) {
+        this.manager = manager;
         this.tokenService = tokenService;
     }
 
     @PostMapping
     public String login(@RequestBody @Valid DatosAutenticacionUsuario datos){
 
-        Usuario usuario = repository.findByLogin(datos.login())
-                .orElseThrow();
+        var authenticationToken =
+                new UsernamePasswordAuthenticationToken(datos.login(), datos.password());
 
-        String token = tokenService.generarToken(usuario);
+        var authentication = manager.authenticate(authenticationToken);
 
-        return token;
+        var usuario = (Usuario) authentication.getPrincipal();
+
+        return tokenService.generarToken(usuario);
     }
-
 }
