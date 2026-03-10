@@ -1,4 +1,4 @@
-# ForoHub API
+# Challege Foro Hub - Back End
 
 API REST desarrollada con **Spring Boot** que permite gestionar tópicos de un foro.
 El proyecto implementa autenticación con **JWT**, validaciones de datos y operaciones CRUD para la gestión de tópicos.
